@@ -123,6 +123,47 @@ hardware: RTL-SDR, Airspy, AirspyHF+, HackRF and the network sources are in;
 SoapySDR, LimeSDR, BladeRF, USRP, the satellite decoders and Discord presence
 are out.
 
+## Testing on the device
+
+The R36S has **no built-in WiFi** (only the 2025 "R36S Plus" does) and one
+usable USB-C OTG port. That single port is the crux of the whole setup: a WiFi
+dongle and an SDR dongle both want it, and an RTL-SDR draws ~300 mA which is at
+or past what the port supplies unassisted. **A powered OTG hub solves both
+problems at once** and is the single most useful thing to have.
+
+PortMaster needs the network once, to fetch the `weston_pkg_0.2` runtime. If
+you'd rather not deal with WiFi at all, place it manually instead — download
+[`weston_pkg_0.2.aarch64.squashfs`](https://github.com/PortsMaster/PortMaster-New/raw/main/runtimes/weston_pkg_0.2.aarch64.squashfs)
+and save it as `weston_pkg_0.2.squashfs` (the generic name, which is what the
+launcher looks for) in `PortMaster/libs/`.
+
+### Fast iteration
+
+Reinstalling through PortMaster for every change is a miserable loop for the
+part of this port that actually needs iterating. With SSH reachable — ArkOS
+enables it by default, and there's an `SSH Over OTG.sh` port if you have no
+WiFi dongle:
+
+```bash
+make deploy DEVICE=ark@192.168.1.50   # copies only what changed, keeps conf/
+make logs   DEVICE=ark@192.168.1.50   # pulls log.txt back
+```
+
+Launch from the Ports menu between the two.
+
+### When it doesn't work
+
+`sdrpp/log.txt` on the device captures both the launcher and the application.
+Read it first. The likely failure modes, in rough order:
+
+| Symptom | Try |
+|---|---|
+| Black screen, log shows GL errors | Edit `sdrpp/graphics.cfg`, e.g. `WESTON_MODE="drm gl kiosk gl4es"` |
+| Exits immediately, no log at all | CRLF line endings somewhere — check `file sdrpp/*.sh` |
+| Runs but no pointer | `CRUSTY_SHOW_CURSOR=1` isn't taking effect; try the `drm` backend |
+| Source list empty with a dongle attached | Power. Use a powered hub before debugging anything else |
+| No audio | Sinks menu, check device selection; ALSA comes from the firmware |
+
 ## Publishing
 
 This repo self-hosts as a **PortMaster source**: users add it once and the port

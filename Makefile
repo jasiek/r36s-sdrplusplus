@@ -6,6 +6,8 @@
 #   make smoke      launch the staged build under Xvfb to prove it starts
 #   make package    produce dist/sdrpp.zip
 #   make source     produce the PortMaster source manifests for self-hosting
+#   make deploy     copy the built port to a device over SSH (DEVICE=ark@ip)
+#   make logs       pull the device's log.txt back  (DEVICE=ark@ip)
 #   make shell      interactive shell in the builder (for poking at things)
 #   make clean      remove build output (keeps the SDR++ checkout)
 #   make distclean  remove everything including the checkout
@@ -29,7 +31,7 @@ DOCKER_RUN = docker run --rm -t \
 GH_USER     ?= jasiek
 GH_REPO     ?= r36s-sdrplusplus
 
-.PHONY: all image build smoke package source shell clean distclean binfmt
+.PHONY: all image build smoke package source deploy logs shell clean distclean binfmt
 
 all: build smoke package source
 
@@ -47,6 +49,12 @@ package:
 
 source: package
 	GH_USER="$(GH_USER)" GH_REPO="$(GH_REPO)" TAG="$(TAG)" ./scripts/make-source.sh
+
+deploy:
+	DEVICE="$(DEVICE)" ./scripts/deploy.sh deploy
+
+logs:
+	DEVICE="$(DEVICE)" ./scripts/deploy.sh logs
 
 shell: image
 	docker run --rm -it --platform=$(PLATFORM) -v "$(CURDIR)":/workspace $(IMAGE) bash
