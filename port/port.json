@@ -1,0 +1,39 @@
+{
+  "version": 4,
+  "name": "sdrpp.zip",
+  "items": [
+    "SDR++.sh",
+    "sdrpp"
+  ],
+  "items_opt": [],
+  "attr": {
+    "title": "SDR++",
+    "porter": [
+      "@PORTER@"
+    ],
+    "desc": "SDR++ is a cross-platform, bloat-free software defined radio receiver. Plug an RTL-SDR, Airspy, AirspyHF+ or HackRF into the USB port and use your handheld as a portable spectrum analyser and receiver, or connect over the network to an rtl_tcp, SpyServer or SDR++ Server host.",
+    "desc_md": null,
+    "inst": "Ready to run - no extra files needed.\n\nA USB SDR receiver is required for local reception. Connect it to the USB OTG port (a powered OTG hub is strongly recommended: an RTL-SDR draws around 300mA, which is more than the port reliably supplies on its own). Supported out of the box: RTL-SDR, Airspy, AirspyHF+, HackRF. Without hardware you can still use the network sources or play back recorded IQ files.\n\nControls: the left stick moves the pointer, A left-clicks, B right-clicks, hold X for fine positioning. The right stick and d-pad step the pointer one pixel at a time for grabbing narrow VFO edges.\n\nAudio comes out of the headphone jack via the built-in Audio Sink.",
+    "inst_md": null,
+    "genres": [
+      "other",
+      "simulation"
+    ],
+    "image": null,
+    "rtr": true,
+    "exp": false,
+    "runtime": [
+      "weston_pkg_0.2.squashfs"
+    ],
+    "store": [],
+    "availability": "free",
+    "reqs": [
+      "analog_1|analog_2",
+      "!lowres"
+    ],
+    "arch": [
+      "aarch64"
+    ],
+    "min_glibc": ""
+  }
+}

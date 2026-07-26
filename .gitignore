@@ -1,0 +1,10 @@
+build/
+dist/
+work/
+*.zip
+.DS_Store
+
+# Release artefacts live on GitHub Releases, never in git - that is the whole
+# point of using the PortMasterV2 source API rather than GitHubRepoV1.
+ports.json
+sdrpp.source.json

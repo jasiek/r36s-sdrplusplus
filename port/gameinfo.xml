@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<gameList>
+  <game>
+    <path>./SDR++.sh</path>
+    <name>SDR++</name>
+    <desc>SDR++ is a cross-platform, bloat-free software defined radio receiver. Turn your handheld into a portable spectrum analyser and receiver with an RTL-SDR, Airspy, AirspyHF+ or HackRF on the USB port, or tune remote hardware over the network with rtl_tcp, SpyServer and SDR++ Server.</desc>
+    <releasedate>20220101T000000</releasedate>
+    <developer>Alexandre Rouma</developer>
+    <publisher>Alexandre Rouma</publisher>
+    <genre>Utility</genre>
+    <players>1</players>
+    <image>./sdrpp/cover.png</image>
+  </game>
+</gameList>

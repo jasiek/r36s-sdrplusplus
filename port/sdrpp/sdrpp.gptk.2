@@ -1,0 +1,48 @@
+# SDR++ - dual analog stick devices (R36S, RG351M/P/V, RG353x, ...)
+#
+# SDR++ has no gamepad support: it is a mouse-driven desktop UI. Everything
+# below exists to make a pointer usable on a handheld.
+
+# Left stick drives the pointer.
+left_analog_up = mouse_movement_up
+left_analog_down = mouse_movement_down
+left_analog_left = mouse_movement_left
+left_analog_right = mouse_movement_right
+
+# Right stick nudges the pointer one step at a time - the only practical way
+# to hit a 4px-wide VFO edge on a 640x480 screen.
+right_analog_up = up
+right_analog_down = down
+right_analog_left = left
+right_analog_right = right
+
+a = mouse_left
+b = mouse_right
+x = mouse_slow
+y = f11
+
+# D-pad as arrow keys, harmless and occasionally handy in text fields.
+up = up
+down = down
+left = left
+right = right
+
+l1 = mouse_slow
+r1 = mouse_left
+l2 = page_up
+r2 = page_down
+
+start = enter
+back = esc
+l3 = mouse_right
+r3 = mouse_left
+
+# Pointer feel. mouse_scale is deliberately below the 8192 default: at 640x480
+# the stock speed overshoots every control in the menu column.
+deadzone_mode = scaled_radial
+deadzone = 2000
+deadzone_scale = 6
+deadzone_delay = 16
+mouse_scale = 6144
+mouse_slow_scale = 25
+dpad_mouse_step = 4

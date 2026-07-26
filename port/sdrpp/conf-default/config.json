@@ -1,0 +1,76 @@
+{
+    "windowSize": {
+        "w": @WIDTH@,
+        "h": @HEIGHT@
+    },
+    "maximized": false,
+    "fullscreen": false,
+    "uiScale": 1.0,
+    "menuWidth": @MENU_WIDTH@,
+    "fftHeight": @FFT_HEIGHT@,
+
+    "fftSize": 8192,
+    "fftRate": 15,
+    "fftWindow": 2,
+    "fastFFT": true,
+    "fullWaterfallUpdate": false,
+    "fftHold": false,
+    "fftSmoothing": false,
+    "snrSmoothing": false,
+
+    "min": -80.0,
+    "max": 0.0,
+    "frequency": 100000000.0,
+    "centerTuning": false,
+    "bandPlan": "General",
+    "bandPlanEnabled": true,
+    "bandPlanPos": 0,
+    "colorMap": "Classic",
+    "showMenu": true,
+    "showWaterfall": true,
+
+    "modulesDirectory": "@GAMEDIR@/modules",
+    "resourcesDirectory": "@GAMEDIR@/res",
+
+    "modules": [],
+
+    "moduleInstances": {
+        "RTL-SDR Source":       { "module": "rtl_sdr_source",       "enabled": true },
+        "RTL-TCP Source":       { "module": "rtl_tcp_source",       "enabled": true },
+        "Airspy Source":        { "module": "airspy_source",        "enabled": true },
+        "AirspyHF+ Source":     { "module": "airspyhf_source",      "enabled": true },
+        "HackRF Source":        { "module": "hackrf_source",        "enabled": true },
+        "Audio Source":         { "module": "audio_source",         "enabled": true },
+        "File Source":          { "module": "file_source",          "enabled": true },
+        "Network Source":       { "module": "network_source",       "enabled": true },
+        "SpyServer Source":     { "module": "spyserver_source",     "enabled": true },
+        "SDR++ Server Source":  { "module": "sdrpp_server_source",  "enabled": true },
+        "RFspace Source":       { "module": "rfspace_source",       "enabled": true },
+        "Hermes Source":        { "module": "hermes_source",        "enabled": true },
+        "Spectran HTTP Source": { "module": "spectran_http_source", "enabled": true },
+
+        "Audio Sink":           { "module": "audio_sink",           "enabled": true },
+        "Network Sink":         { "module": "network_sink",         "enabled": true },
+
+        "Radio":                { "module": "radio",                "enabled": true },
+        "Pager Decoder":        { "module": "pager_decoder",        "enabled": false },
+
+        "Frequency Manager":    { "module": "frequency_manager",    "enabled": true },
+        "Recorder":             { "module": "recorder",             "enabled": true },
+        "Scanner":              { "module": "scanner",              "enabled": false },
+        "Rigctl Server":        { "module": "rigctl_server",        "enabled": false },
+        "Rigctl Client":        { "module": "rigctl_client",        "enabled": false },
+        "IQ Exporter":          { "module": "iq_exporter",          "enabled": false }
+    },
+
+    "menuElements": [
+        { "name": "Source",            "open": true  },
+        { "name": "Radio",             "open": true  },
+        { "name": "Recorder",          "open": false },
+        { "name": "Sinks",             "open": false },
+        { "name": "Frequency Manager", "open": false },
+        { "name": "VFO Color",         "open": false },
+        { "name": "Band Plan",         "open": false },
+        { "name": "Display",           "open": false }
+    ]
+}

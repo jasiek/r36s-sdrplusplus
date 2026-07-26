@@ -1,0 +1,65 @@
+name: Build port
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      sdrpp_ref:
+        description: 'SDR++ git ref to build'
+        default: 'master'
+
+jobs:
+  build:
+    # ARM runner: the builder container is aarch64, so this compiles natively.
+    # ubuntu-latest works too via `make binfmt`, but QEMU makes it roughly ten
+    # times slower.
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build builder image
+        run: make image
+
+      - name: Compile SDR++ and stage the port
+        run: make build
+        env:
+          SDRPP_REF: ${{ github.event.inputs.sdrpp_ref || 'master' }}
+
+      - name: Smoke test
+        run: make smoke
+
+      - name: Package
+        run: make package
+        env:
+          PORTER: ${{ vars.PORTER || 'Unknown' }}
+
+      - name: Build PortMaster source manifests
+        run: make source
+        env:
+          GH_USER: ${{ github.repository_owner }}
+          GH_REPO: ${{ github.event.repository.name }}
+          TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdrpp-portmaster
+          path: |
+            dist/sdrpp.zip
+            dist/ports.json
+            dist/sdrpp.source.json
+          if-no-files-found: error
+
+      # ports.json must ship as a release asset next to the zip: harbourmaster
+      # finds it by asset name and reads the md5 from it, so a release with the
+      # zip but no ports.json produces a source that lists nothing.
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/sdrpp.zip
+            dist/ports.json
+            dist/sdrpp.source.json

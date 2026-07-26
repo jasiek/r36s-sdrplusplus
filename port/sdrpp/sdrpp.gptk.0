@@ -1,0 +1,22 @@
+# SDR++ - d-pad only devices. Usable, but slow going.
+
+up = mouse_movement_up
+down = mouse_movement_down
+left = mouse_movement_left
+right = mouse_movement_right
+
+a = mouse_left
+b = mouse_right
+x = mouse_slow
+y = f11
+
+l1 = mouse_slow
+r1 = mouse_left
+l2 = page_up
+r2 = page_down
+
+start = enter
+back = esc
+
+dpad_mouse_step = 6
+mouse_slow_scale = 20
