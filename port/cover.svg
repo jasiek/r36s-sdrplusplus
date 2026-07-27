@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900" viewBox="0 0 600 900">
+  <!-- Original cover art for the SDR++ PortMaster port.
+       Motif: a spectrum trace fading down into a waterfall, which is what you
+       spend the whole time looking at. No third-party marks. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#0d1b2a"/>
+      <stop offset="55%"  stop-color="#0a1420"/>
+      <stop offset="100%" stop-color="#050a10"/>
+    </linearGradient>
+
+    <!-- Classic SDR waterfall ramp: black -> blue -> cyan -> yellow -> red -->
+    <linearGradient id="fall" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#000428"/>
+      <stop offset="25%"  stop-color="#1b4b96"/>
+      <stop offset="50%"  stop-color="#12d0e0"/>
+      <stop offset="72%"  stop-color="#f2e33c"/>
+      <stop offset="88%"  stop-color="#f26d3c"/>
+      <stop offset="100%" stop-color="#8c1d1d"/>
+    </linearGradient>
+
+    <linearGradient id="traceFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#5ce1e6" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#5ce1e6" stop-opacity="0.05"/>
+    </linearGradient>
+
+    <clipPath id="fallClip">
+      <rect x="60" y="470" width="480" height="250" rx="6"/>
+    </clipPath>
+  </defs>
+
+  <rect width="600" height="900" fill="url(#bg)"/>
+
+  <!-- faint grid -->
+  <g stroke="#1e3350" stroke-width="1" opacity="0.55">
+    <path d="M60 250H540M60 320H540M60 390H540M60 460H540"/>
+    <path d="M140 210V460M220 210V460M300 210V460M380 210V460M460 210V460"/>
+  </g>
+
+  <!-- spectrum trace: a noise floor with a few signals poking out -->
+  <path d="M60 440 L80 434 L96 438 L110 430 L122 436 L132 400 L138 372 L144 402 L152 431
+           L168 436 L182 428 L196 434 L208 424 L220 430 L232 300 L238 262 L244 298 L256 428
+           L270 433 L286 426 L300 432 L312 422 L324 429 L336 434 L350 425 L362 431
+           L374 350 L380 322 L386 352 L398 430 L412 424 L426 432 L438 426 L452 433
+           L464 424 L478 430 L492 421 L506 429 L520 424 L540 431 L540 460 L60 460 Z"
+        fill="url(#traceFade)"/>
+  <path d="M60 440 L80 434 L96 438 L110 430 L122 436 L132 400 L138 372 L144 402 L152 431
+           L168 436 L182 428 L196 434 L208 424 L220 430 L232 300 L238 262 L244 298 L256 428
+           L270 433 L286 426 L300 432 L312 422 L324 429 L336 434 L350 425 L362 431
+           L374 350 L380 322 L386 352 L398 430 L412 424 L426 432 L438 426 L452 433
+           L464 424 L478 430 L492 421 L506 429 L520 424 L540 431"
+        fill="none" stroke="#7ef0f5" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- waterfall: horizontal bands, signals persisting as vertical streaks -->
+  <g clip-path="url(#fallClip)">
+    <rect x="60" y="470" width="480" height="250" fill="#03060d"/>
+    <g opacity="0.92">
+      <rect x="222" y="470" width="26" height="250" fill="url(#fall)" opacity="0.85"/>
+      <rect x="366" y="470" width="22" height="250" fill="url(#fall)" opacity="0.7"/>
+      <rect x="126" y="470" width="16" height="250" fill="url(#fall)" opacity="0.5"/>
+    </g>
+    <!-- scanline texture -->
+    <g stroke="#000" stroke-width="1" opacity="0.35">
+      <path d="M60 480H540M60 494H540M60 508H540M60 522H540M60 536H540M60 550H540
+               M60 564H540M60 578H540M60 592H540M60 606H540M60 620H540M60 634H540
+               M60 648H540M60 662H540M60 676H540M60 690H540M60 704H540M60 718H540"/>
+    </g>
+  </g>
+  <rect x="60" y="470" width="480" height="250" rx="6" fill="none" stroke="#24405f" stroke-width="1.5"/>
+
+  <!-- wordmark -->
+  <text x="300" y="150" text-anchor="middle"
+        font-family="Helvetica, Arial, sans-serif" font-size="96" font-weight="700"
+        fill="#f2f6fa" letter-spacing="-2">SDR++</text>
+  <text x="300" y="192" text-anchor="middle"
+        font-family="Helvetica, Arial, sans-serif" font-size="21" font-weight="500"
+        fill="#5ce1e6" letter-spacing="6">SOFTWARE DEFINED RADIO</text>
+
+  <text x="300" y="790" text-anchor="middle"
+        font-family="Helvetica, Arial, sans-serif" font-size="24" font-weight="500"
+        fill="#8fa6bd" letter-spacing="3">for PortMaster</text>
+  <text x="300" y="828" text-anchor="middle"
+        font-family="Helvetica, Arial, sans-serif" font-size="16" font-weight="400"
+        fill="#54687d" letter-spacing="1">RTL-SDR · Airspy · HackRF · network sources</text>
+</svg>

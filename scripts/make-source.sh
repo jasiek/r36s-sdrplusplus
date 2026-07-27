@@ -82,6 +82,37 @@ cat > "$DIST/sdrpp.source.json" <<EOF
 }
 EOF
 
+# ------------------------------------------------------------------ images
+# The screenshot inside the port zip is what a user sees after installing. What
+# the PortMaster *browser* shows comes from a separate images.zip release asset,
+# with files named <portname>.<type>.<ext> - see harbourmaster's
+# BaseSource._load_images(). Without this the port lists with no artwork at all,
+# and harbourmaster logs "Port image sdrpp.zip: missing."
+#
+# Release assets carry no md5, so PortMasterV2 falls back to fetching a
+# separate images.zip.md5 asset. Ship both or the images are silently skipped.
+if [ -f "$ROOT/port/screenshot.png" ] || [ -f "$ROOT/port/cover.png" ]; then
+    log "Building images.zip"
+    IMGDIR="$DIST/.images"
+    rm -rf "$IMGDIR"; mkdir -p "$IMGDIR"
+
+    [ -f "$ROOT/port/screenshot.png" ] && cp "$ROOT/port/screenshot.png" "$IMGDIR/sdrpp.screenshot.png"
+    [ -f "$ROOT/port/cover.png" ]      && cp "$ROOT/port/cover.png"      "$IMGDIR/sdrpp.cover.png"
+
+    ( cd "$IMGDIR" && zip -q -r -X "$DIST/images.zip" . )
+    rm -rf "$IMGDIR"
+
+    if command -v md5sum >/dev/null 2>&1; then
+        IMD5="$(md5sum "$DIST/images.zip" | cut -d' ' -f1)"
+    else
+        IMD5="$(md5 -q "$DIST/images.zip")"
+    fi
+    printf '%s  images.zip\n' "$IMD5" > "$DIST/images.zip.md5"
+    echo "  images.zip ($IMD5)"
+else
+    log "No port/screenshot.png or port/cover.png - the source will list without artwork"
+fi
+
 # ------------------------------------------------------------------ checks
 # ports.json is assembled by splicing port.json into a wrapper, so a change to
 # port.json's formatting could quietly produce something that parses but is
@@ -114,6 +145,6 @@ else
 fi
 
 log "Done"
-echo "  release assets : dist/sdrpp.zip  dist/ports.json"
+echo "  release assets : dist/sdrpp.zip  dist/ports.json$([ -f "$DIST/images.zip" ] && echo "  dist/images.zip  dist/images.zip.md5")"
 echo "  users install  : dist/sdrpp.source.json -> <device>/PortMaster/config/"
 echo "  source url     : https://api.github.com/repos/$GH_USER/$GH_REPO/releases/latest"

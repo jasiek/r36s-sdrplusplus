@@ -50,6 +50,8 @@ jobs:
             dist/sdrpp.zip
             dist/ports.json
             dist/sdrpp.source.json
+            dist/images.zip
+            dist/images.zip.md5
           if-no-files-found: error
 
       # ports.json must ship as a release asset next to the zip: harbourmaster
@@ -63,3 +65,5 @@ jobs:
             dist/sdrpp.zip
             dist/ports.json
             dist/sdrpp.source.json
+            dist/images.zip
+            dist/images.zip.md5

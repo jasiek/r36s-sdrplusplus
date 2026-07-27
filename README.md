@@ -137,6 +137,24 @@ you'd rather not deal with WiFi at all, place it manually instead — download
 and save it as `weston_pkg_0.2.squashfs` (the generic name, which is what the
 launcher looks for) in `PortMaster/libs/`.
 
+### Artwork
+
+`port/cover.png` is original art, rendered from `port/cover.svg`.
+
+`port/screenshot.png` is a **host capture**, not a device capture — `make
+screenshot` runs the real aarch64 binary under Xvfb at 640x480 and grabs the
+framebuffer. It is a genuine render of the real application at the real
+resolution, which makes it fine for the source listing, but PortMaster's
+submission rules require a screenshot taken on the handheld itself including
+any letterboxing. **Replace it with a device capture before submitting
+upstream.**
+
+That capture is also what revealed the layout clipping documented in the port
+README: the frequency readout and the right-hand slider labels don't fit at
+640x480, and no config setting fixes it, because SDR++ only accepts UI scales
+of 100/200/300/400% — `display.cpp` looks the value up in a fixed list and
+throws an uncaught exception on anything else.
+
 ### Fast iteration
 
 Reinstalling through PortMaster for every change is a miserable loop for the

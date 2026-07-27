@@ -64,6 +64,26 @@ back.
 Audio comes out of the headphone jack through the **Audio Sink** module. If you
 get no sound, open the Sinks menu and check the device selection.
 
+## Known limitations at 640x480
+
+SDR++ is a desktop application whose layout assumes a much wider window, and
+some of it simply does not fit:
+
+* The large frequency readout in the top bar is **clipped on the right**. The
+  digits you can see are still correct, and tuning works normally — via the
+  waterfall, the scroll controls, or the Frequency Manager.
+* Labels on the right-hand zoom / max / min sliders are cut off. The sliders
+  themselves work.
+* Some menu labels are truncated. The menu column is resizable: drag its right
+  edge if you need to read one.
+
+None of this is fixable from the config. SDR++ only accepts UI scales of 100%,
+200%, 300% and 400% — there is no sub-100% option that would shrink the layout
+to fit. **Do not hand-edit `uiScale` in `conf/config.json` to anything other
+than those four values**: SDR++ looks the value up in a fixed list and throws an
+uncaught exception if it isn't there, so the port will crash on startup with
+nothing useful in the log. Changing it from the Display menu is always safe.
+
 ## Performance notes
 
 This is a demanding application on a 1.3 GHz Cortex-A35. If it struggles:
