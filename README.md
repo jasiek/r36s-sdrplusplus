@@ -177,8 +177,9 @@ taken on the handheld including any letterboxing, so on this hardware that
 means **a photograph of the device**. The script is kept for handhelds whose
 firmware leaves fbcon on the CRTC, where the fbdev path does work.
 
-That capture is also what revealed the layout clipping documented in the port
-README: the frequency readout and the right-hand slider labels don't fit at
+The host capture is what first revealed the layout clipping documented in the
+port README, and the photograph at the top of this file confirms it on the
+panel: the frequency readout and the right-hand slider labels don't fit at
 640x480, and no config setting fixes it, because SDR++ only accepts UI scales
 of 100/200/300/400% — `display.cpp` looks the value up in a fixed list and
 throws an uncaught exception on anything else.
@@ -295,10 +296,45 @@ The build pipeline is complete and verified end to end: SDR++ compiles for
 aarch64 against a focal-era toolchain, the bundle is self-contained, and the
 binary starts and renders under the smoke test.
 
-**On-device behaviour has not been verified** — I don't have an R36S. The
-graphics path in particular is the piece most likely to need a nudge, which is
-why `WESTON_MODE` is overridable at runtime via `sdrpp/graphics.cfg` rather
-than baked into the binary. See the port README for the fallbacks to try.
+**It runs on real hardware.** Verified on an R36S running dArkOSRE (kernel
+4.4.189, PortMaster 2025.03.03, 640x480, Cortex-A35, 1 GB), launched from the
+Ports menu with the shipped defaults and no `graphics.cfg` override: SDR++
+1.3.0 reaches `Ready.` with all 23 modules loaded and nothing at ERROR level,
+the Audio Sink opens an RtAudio stream, and an RTL-SDR — a Nooelec NESDR SMArt
+v5 on a powered OTG hub — receives on the 2 m band. The screenshot at the top
+of this file is that session.
+
+Two things had to be right for any of it to work, and both are worth knowing
+before you debug your own device:
+
+**GL4ES must report 3.0, not 2.1.** ImGui's bundled gl3w loader refuses any
+context below GL 3.0, and it does so in `imgl3wInit` — ahead of the point where
+the GLSL version string is used at all — so SDR++'s own fallback to GLSL 1.2
+calls the same failing function and cannot rescue it. The process exits 255
+with `Failed to initialize OpenGL loader!` and nothing more helpful. Hence
+`LIBGL_GL=30` in the launcher.
+
+**The Westonpack runtime may never arrive on its own.** PortMaster fetches it
+through `harbourmaster`, and on the test device harbourmaster was broken: its
+`pylibs.zip` had the library contents at the top level while the harbourmaster
+script that shipped alongside extracts into the PortMaster root and expects a
+`pylibs/` prefix, so extraction collided with the harbourmaster script file
+itself and aborted every time. The port then died at the mount with only
+`special device ... does not exist` to show for it. `make deploy` installs and
+verifies the runtime itself rather than trusting that path.
+
+Still open:
+
+- **One device, one firmware.** dArkOSRE on an R36S is the only combination
+  tested. Nothing here has been near ROCKNIX, muOS, Knulli or AmberELEC.
+- **The 640x480 layout clips.** Visible in the screenshot: the right-hand
+  slider labels and the right edge of the frequency readout are cut off. No
+  config setting fixes it — SDR++ only accepts UI scales of 100/200/300/400%,
+  because `display.cpp` looks the value up in a fixed list and throws an
+  uncaught exception on anything else.
+- **`port/screenshot.png` is still the host Xvfb render**, not the device
+  capture, because this hardware cannot be screenshotted over SSH — see
+  *Artwork* above for why.
 
 Before submitting to PortMaster proper, its rules require testing across the
 major firmwares (ArkOS, AmberELEC, ROCKNIX, muOS) with results posted in the
