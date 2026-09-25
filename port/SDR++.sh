@@ -64,9 +64,17 @@ sed -i -e "s|\"modulesDirectory\": *\"[^\"]*\"|\"modulesDirectory\": \"$GAMEDIR/
 # Overridable without a rebuild: drop a graphics.cfg next to this script with
 # e.g.  WESTON_MODE="drm gl kiosk gl4es"   to try a different path.
 # Defaults are the combination that works on RK3326-class Mali blob devices
-# (ArkOS/muOS): no real compositor, GLX faked over SDL2, GL 2.1 via GL4ES.
+# (ArkOS/muOS): no real compositor, GLX faked over SDL2, GL4ES underneath.
+#
+# LIBGL_GL=30 is load-bearing and must not be lowered to 21. ImGui's bundled
+# gl3w loader hard-fails when GL_MAJOR_VERSION < 3 (imgl3wInit ->
+# parse_version -> GL3W_ERROR_OPENGL_VERSION), and it does that *before* the
+# GLSL version string matters - so SDR++'s own "fall back to GLSL 1.2" path
+# cannot save it and the backend returns -1 (exit 255). GL4ES at 30 still
+# renders through the same 2.1-class driver, it just reports 3.0 and turns on
+# its VAO emulation, which is exactly what the ImGui GL3 renderer needs.
 WESTON_MODE="headless noop kiosk crusty_glx_gl4es"
-GL4ES_ENV="LIBGL_ES=2 LIBGL_GL=21 LIBGL_NOHIGHP=1 LIBGL_NOBANNER=1 LIBGL_MIPMAP=3"
+GL4ES_ENV="LIBGL_ES=2 LIBGL_GL=30 LIBGL_NOHIGHP=1 LIBGL_NOBANNER=1 LIBGL_MIPMAP=3"
 [ -f "$GAMEDIR/graphics.cfg" ] && source "$GAMEDIR/graphics.cfg"
 
 # ------------------------------------------------------------ weston runtime
@@ -94,7 +102,12 @@ GPTK="$GAMEDIR/sdrpp.gptk"
 
 $GPTOKEYB "sdrpp.aarch64" -c "$GPTK" &
 
-pm_platform_helper "$GAMEDIR/sdrpp.aarch64" >/dev/null
+# Optional, and genuinely absent on some firmwares: it is defined in
+# mod_${CFW_NAME}.txt, and a CFW with no mod file of its own (dArkOSRE, for
+# one) never gets it. Calling it unguarded just prints "command not found".
+if command -v pm_platform_helper >/dev/null 2>&1; then
+  pm_platform_helper "$GAMEDIR/sdrpp.aarch64" >/dev/null
+fi
 
 # ------------------------------------------------------------ run
 # CRUSTY_SHOW_CURSOR is not optional here: without a visible pointer a

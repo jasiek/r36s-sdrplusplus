@@ -131,8 +131,17 @@ dongle and an SDR dongle both want it, and an RTL-SDR draws ~300 mA which is at
 or past what the port supplies unassisted. **A powered OTG hub solves both
 problems at once** and is the single most useful thing to have.
 
-PortMaster needs the network once, to fetch the `weston_pkg_0.2` runtime. If
-you'd rather not deal with WiFi at all, place it manually instead — download
+SDR++ renders through the `weston_pkg_0.2` runtime, and something has to put
+that runtime on the device. **`make deploy` now does it for you** — it checks
+`PortMaster/libs/`, verifies the md5, and installs the runtime if it is missing
+or damaged, fetching it on the handheld when that has a route to the internet
+and through the SSH link when it doesn't.
+
+Do not count on PortMaster fetching it by itself. That download goes through
+`harbourmaster`, which is the first part of an ageing PortMaster install to
+break, and when it breaks the port dies at the mount with nothing in the log
+but `special device ... does not exist`. If you are installing by hand rather
+than with `make deploy`, download
 [`weston_pkg_0.2.aarch64.squashfs`](https://github.com/PortsMaster/PortMaster-New/raw/main/runtimes/weston_pkg_0.2.aarch64.squashfs)
 and save it as `weston_pkg_0.2.squashfs` (the generic name, which is what the
 launcher looks for) in `PortMaster/libs/`.
@@ -141,13 +150,30 @@ launcher looks for) in `PortMaster/libs/`.
 
 `port/cover.png` is original art, rendered from `port/cover.svg`.
 
-`port/screenshot.png` is a **host capture**, not a device capture — `make
-screenshot` runs the real aarch64 binary under Xvfb at 640x480 and grabs the
-framebuffer. It is a genuine render of the real application at the real
-resolution, which makes it fine for the source listing, but PortMaster's
-submission rules require a screenshot taken on the handheld itself including
-any letterboxing. **Replace it with a device capture before submitting
-upstream.**
+`port/screenshot.png` can be produced two ways:
+
+```bash
+make screenshot                                    # host, under Xvfb
+make device-screenshot DEVICE=ark@192.168.1.50     # the handheld's own panel
+```
+
+`make screenshot` runs the real aarch64 binary under Xvfb at 640x480 and grabs
+the framebuffer. It is a genuine render of the real application at the real
+resolution, which makes it fine for the source listing.
+
+`make device-screenshot` launches the port on the device, waits for SDR++ to
+report itself ready, grabs the panel and tears weston down again — but **it
+does not work on an R36S**, and the failure is in the kernel rather than the
+script. The 4.4 vendor kernel exposes `/dev/fb0` as DRM fbdev emulation that is
+never scanned out (`smem_start 0x0`, reads back all zeroes, while
+`/sys/kernel/debug/dri/0/summary` shows the VOP scanning out a different
+address); `ffmpeg -f kmsgrab` finds the active plane but cannot get a handle to
+it, because the buffer belongs to crusty as DRM master and 4.4 predates
+`drmModeGetFB2`; `/dev/mem` is refused by `CONFIG_STRICT_DEVMEM`; and the
+firmware ships no screenshot tool. PortMaster's submission rules want a capture
+taken on the handheld including any letterboxing, so on this hardware that
+means **a photograph of the device**. The script is kept for handhelds whose
+firmware leaves fbcon on the CRTC, where the fbdev path does work.
 
 That capture is also what revealed the layout clipping documented in the port
 README: the frequency readout and the right-hand slider labels don't fit at
@@ -169,6 +195,14 @@ make logs   DEVICE=ark@192.168.1.50   # pulls log.txt back
 
 Launch from the Ports menu between the two.
 
+`deploy` produces a *runnable* install, not just a file copy. On top of the
+port tree it places `port.json` and `gameinfo.xml` inside the port folder,
+where a PortMaster install puts them and where EmulationStation looks for the
+cover art, and it makes sure the Westonpack runtime is present and intact. It
+depends on `package`, so the device always gets what `port/` currently says —
+deploying a stale `dist/` is the easiest way to spend an evening debugging a
+bug you already fixed. `conf/`, `log.txt` and `graphics.cfg` are left alone.
+
 ### When it doesn't work
 
 `sdrpp/log.txt` on the device captures both the launcher and the application.
@@ -176,6 +210,9 @@ Read it first. The likely failure modes, in rough order:
 
 | Symptom | Try |
 |---|---|
+| `mount: special device .../weston_pkg_0.2.squashfs does not exist` | The runtime is missing and PortMaster could not fetch it. `make deploy` installs it; see *Testing on the device* for the manual route |
+| `Failed to initialize OpenGL loader!`, then exit 255 | GL4ES is reporting a version below 3.0. ImGui's gl3w loader refuses anything lower and SDR++'s own GLSL 1.2 fallback cannot save it, because the version gate runs first. Check `LIBGL_GL=30` survived into `graphics.cfg` |
+| `pm_platform_helper: command not found` | Harmless. The function only exists in `mod_${CFW_NAME}.txt`, and firmwares without a mod file of their own never define it |
 | Black screen, log shows GL errors | Edit `sdrpp/graphics.cfg`, e.g. `WESTON_MODE="drm gl kiosk gl4es"` |
 | Exits immediately, no log at all | CRLF line endings somewhere — check `file sdrpp/*.sh` |
 | Runs but no pointer | `CRUSTY_SHOW_CURSOR=1` isn't taking effect; try the `drm` backend |

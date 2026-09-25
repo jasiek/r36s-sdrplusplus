@@ -7,7 +7,10 @@
 #   make package    produce dist/sdrpp.zip
 #   make source     produce the PortMaster source manifests for self-hosting
 #   make screenshot re-capture port/screenshot.png under Xvfb (host, not device)
-#   make deploy     copy the built port to a device over SSH (DEVICE=ark@ip)
+#   make device-screenshot  capture port/screenshot.png from the handheld's own
+#                           panel (DEVICE=ark@ip) - see the script, this cannot
+#                           work on a 4.4-kernel RK3326 device
+#   make deploy     install a runnable copy on a device over SSH (DEVICE=ark@ip)
 #   make logs       pull the device's log.txt back  (DEVICE=ark@ip)
 #   make shell      interactive shell in the builder (for poking at things)
 #   make clean      remove build output (keeps the SDR++ checkout)
@@ -32,7 +35,7 @@ DOCKER_RUN = docker run --rm -t \
 GH_USER     ?= jasiek
 GH_REPO     ?= r36s-sdrplusplus
 
-.PHONY: all image build smoke package source screenshot deploy logs shell clean distclean binfmt
+.PHONY: all image build smoke package source screenshot device-screenshot deploy logs shell clean distclean binfmt
 
 all: build smoke package source
 
@@ -54,7 +57,13 @@ source: package
 screenshot: image
 	$(DOCKER_RUN) ./scripts/screenshot.sh
 
-deploy:
+device-screenshot:
+	DEVICE="$(DEVICE)" ./scripts/device-screenshot.sh
+
+# Depends on package so the device always gets the tree that port/ currently
+# describes - deploying a stale dist/ is the easiest way to debug a bug you
+# already fixed.
+deploy: package
 	DEVICE="$(DEVICE)" ./scripts/deploy.sh deploy
 
 logs:
