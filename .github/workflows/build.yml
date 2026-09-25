@@ -17,6 +17,14 @@ jobs:
     # ubuntu-latest works too via `make binfmt`, but QEMU makes it roughly ten
     # times slower.
     runs-on: ubuntu-24.04-arm
+
+    # The repo's default workflow token is read-only, so the release step ends
+    # in "Resource not accessible by integration" after a three-minute build
+    # that otherwise succeeded. Granted here rather than by flipping the
+    # repository-wide setting: this is the only job that needs to write, and a
+    # permissions block in the workflow is visible to anyone reading it.
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
