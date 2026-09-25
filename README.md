@@ -1,5 +1,7 @@
 # SDR++ for PortMaster (R36S and friends)
 
+![screenshot](images/screenshot1.jpg)
+
 A reproducible build pipeline that turns upstream
 [SDR++](https://github.com/AlexandreRouma/SDRPlusPlus) into a
 [PortMaster](https://portmaster.games/)-installable port for RK3326-class Linux
