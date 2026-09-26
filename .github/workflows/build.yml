@@ -25,6 +25,15 @@ jobs:
     # permissions block in the workflow is visible to anyone reading it.
     permissions:
       contents: write
+
+    # Job-level, not step-level. `source` depends on `package`, and `package`
+    # is phony, so `make source` re-runs it - which means a PORTER set only on
+    # the Package step is gone by the time the manifests are built, and
+    # package.sh starts with rm -rf dist, so the good port.json is thrown away
+    # and rebuilt as "Unknown". Setting it once for the whole job removes the
+    # trap rather than papering over this instance of it.
+    env:
+      PORTER: ${{ vars.PORTER || 'Unknown' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -41,8 +50,6 @@ jobs:
 
       - name: Package
         run: make package
-        env:
-          PORTER: ${{ vars.PORTER || 'Unknown' }}
 
       - name: Build PortMaster source manifests
         run: make source
